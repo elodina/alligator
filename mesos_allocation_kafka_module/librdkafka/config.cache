@@ -1,0 +1,23 @@
+# mklove configure cache file generated at вівторок, 19 травня 2015 13:56:56 +0300
+MKL_STATUS_distro=ok
+MKL_STATUS_ccenv=failed
+MKL_STATUS_gcc=ok
+MKL_STATUS_cxxenv=failed
+MKL_STATUS_gxx=ok
+MKL_STATUS_ld=ok
+MKL_STATUS_nm=ok
+MKL_STATUS_objdump=ok
+MKL_STATUS_strip=ok
+MKL_STATUS_pkgconfig=ok
+MKL_STATUS_install=ok
+MKL_STATUS_PIC=ok
+MKL_STATUS_gnulib=ok
+MKL_STATUS_ldsflagvs=ok
+MKL_STATUS___atomic_32=ok
+MKL_STATUS___atomic_64=ok
+MKL_STATUS_socket=ok
+MKL_STATUS_parseversion=ok
+MKL_STATUS_libpthread=ok
+MKL_STATUS_zlib=ok
+MKL_STATUS_librt=ok
+MKL_STATUS_perl=ok

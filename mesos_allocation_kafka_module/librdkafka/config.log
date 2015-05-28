@@ -1,0 +1,25 @@
+# configure exec: ./configure 
+# On вівторок, 19 травня 2015 13:56:54 +0300
+DBG: ccenv: WITH_CC:  --version failed: mklove/modules/configure.base: line 1079: --version: command not found
+DBG: Check ccenv (WITH_CC, action cont (originally cont)) failed: command ' --version' failed:
+mklove/modules/configure.base: line 1079: --version: command not found
+DBG: cxxenv: WITH_CXX:  --version failed: mklove/modules/configure.base: line 1079: --version: command not found
+DBG: Check cxxenv (WITH_CXX, action cont (originally cont)) failed: command ' --version' failed:
+mklove/modules/configure.base: line 1079: --version: command not found
+DBG: Compile check PIC (HAVE_PIC): gcc  -g -O2 -Wall -Werror -fPIC _mkltmp9iUwB.c -o _mkltmp9iUwB.c.o  
+DBG: Compile check gnulib (WITH_GNULD): gcc  -g -O2 -fPIC -Wall -Werror -shared -Wl,-soname,mkltest.0 _mkltmp3jLlU.c -o _mkltmp3jLlU.c.o  
+DBG: Compile check ldsflagvs (): gcc  -g -O2 -fPIC -Wall -Werror -shared -Wl,--version-script=_mkltmpfeRgA _mkltmpBBDWr.c -o _mkltmpBBDWr.c.o  
+DBG: Compile check __atomic_32 (HAVE_ATOMICS_32): gcc  -g -O2 -fPIC -Wall -Werror  _mkltmp38U4g.c -o _mkltmp38U4g.c.o  
+DBG: Compile check __atomic_64 (HAVE_ATOMICS_64): gcc  -g -O2 -fPIC -Wall -Werror  _mkltmp7nCFE.c -o _mkltmp7nCFE.c.o  
+DBG: Compile check socket (): gcc  -g -O2 -fPIC -Wall -Wfloat-equal -Wpointer-arith -Wall -Werror  _mkltmpp3kQF.c -o _mkltmpp3kQF.c.o  
+DBG: pkg-config check libpthread (): pkg-config --short-errors --cflags libpthread
+DBG: 'pkg-config --short-errors --cflags libpthread' failed: No package 'libpthread' found
+DBG: Check libpthread (, action cont (originally cont)) failed: 'pkg-config --short-errors --cflags libpthread' failed:
+No package 'libpthread' found
+DBG: Compile check libpthread (): gcc  -g -O2 -fPIC -Wall -Wfloat-equal -Wpointer-arith -Wall -Werror -lpthread _mkltmpMiLem.c -o _mkltmpMiLem.c.o  
+DBG: pkg-config check zlib (): pkg-config --short-errors --cflags zlib
+DBG: pkg-config check librt (): pkg-config --short-errors --cflags librt
+DBG: 'pkg-config --short-errors --cflags librt' failed: No package 'librt' found
+DBG: Check librt (, action cont (originally cont)) failed: 'pkg-config --short-errors --cflags librt' failed:
+No package 'librt' found
+DBG: Compile check librt (): gcc  -g -O2 -fPIC -Wall -Wfloat-equal -Wpointer-arith -Wall -Werror -lrt _mkltmpHARgj.c -o _mkltmpHARgj.c.o  
