@@ -196,7 +196,6 @@ KafkaProducerAllocator::create()
 //KafkaProducerAllocator<AllocatorProcess>::KafkaProducerAllocator()
 KafkaProducerAllocator::KafkaProducerAllocator()
 {
-  std::cerr << "NEW version!!\n";
   std::string errstr;
   std::string brokers = "localhost:9092";
 
