@@ -31,7 +31,12 @@ AM_LIBS = $(PTHREAD_LIBS)
 AM_CPPFLAGS = $(MESOS_CPPFLAGS) -Wall -Werror
 
 pkglib_LTLIBRARIES += libkafkaallocation.la
-libkafkaallocation_la_SOURCES = kafka_producor_allocator.cpp
+libkafkaallocation_la_SOURCES = kafka_producor_allocator.cpp \
+                                mesos/hierarchical.hpp \
+                                mesos/allocator.hpp \
+                                sorter/sorter.hpp \
+                                sorter/drf/sorter.hpp \
+                                sorter/drf/sorter.cpp
 libkafkaallocation_la_LDFLAGS = -release $(PACKAGE_VERSION) -shared
 libkafkaallocation_la_LIBADD = -lrdkafka++ -lrdkafka
 

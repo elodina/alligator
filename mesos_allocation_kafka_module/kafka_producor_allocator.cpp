@@ -1,3 +1,20 @@
+/**
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 
 #include <memory>
 #include <mesos/mesos.hpp>
@@ -5,10 +22,12 @@
 #include <mesos/module.hpp>
 #include <mesos/module/allocator.hpp>
 #include <librdkafka/rdkafkacpp.h>
+#include "mesos/hierarchical.hpp"
 
 namespace mesos {
 namespace master {
 namespace allocator {
+namespace custom {
 
 namespace convertor {
 
@@ -94,10 +113,9 @@ void toString(std::string& str, const std::string& data)
 
 }
 
-//template <typename AllocatorProcess>
-class KafkaProducerAllocator : public Allocator//public MesosAllocator<AllocatorProcess>
+class KafkaProducerAllocator : public HierarchicalDRFAllocator
 {
-  //typedef MesosAllocator<AllocatorProcess> Ancestor;
+  typedef HierarchicalDRFAllocator Ancestor;
 
 private:
   std::unique_ptr<RdKafka::Producer> producer;
@@ -172,28 +190,22 @@ public:
     const FrameworkID& frameworkId);
 
 private:
-  void produce(const std::string& topic_str, const std::string& message_str);
-
-private:
   KafkaProducerAllocator();
   KafkaProducerAllocator(const KafkaProducerAllocator&); // Not copyable.
   KafkaProducerAllocator& operator=(const KafkaProducerAllocator&); // Not assignable.
+
+  void produce(const std::string& topic_str, const std::string& message_str);
 };
 
-//template <typename AllocatorProcess>
 Try<mesos::master::allocator::Allocator*>
 KafkaProducerAllocator::create()
-//KafkaProducerAllocator<AllocatorProcess>::create()
 {
   LOG(INFO) << "Created kafka allocator\n ";
   mesos::master::allocator::Allocator* allocator =
     new KafkaProducerAllocator();
-  //new KafkaProducerAllocator<AllocatorProcess>();
   return CHECK_NOTNULL(allocator);
 }
 
-//template <typename AllocatorProcess>
-//KafkaProducerAllocator<AllocatorProcess>::KafkaProducerAllocator()
 KafkaProducerAllocator::KafkaProducerAllocator()
 {
   std::string errstr;
@@ -211,9 +223,6 @@ KafkaProducerAllocator::KafkaProducerAllocator()
   std::cout << "% Created producer " << producer->name() << std::endl;
 }
 
-
-//template <typename AllocatorProcess>
-//KafkaProducerAllocator<AllocatorProcess>::~KafkaProducerAllocator()
 KafkaProducerAllocator::~KafkaProducerAllocator()
 {
 
@@ -226,11 +235,9 @@ void KafkaProducerAllocator::initialize(
     const hashmap<SlaveID, Resources>&)>& offerCallback,
     const hashmap<std::string, mesos::master::RoleInfo>& roles)
 {
-
+Ancestor::initialize(allocationInterval, offerCallback, roles);
 }
 
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::addFramework(
 inline void KafkaProducerAllocator::addFramework(
   const FrameworkID& frameworkId,
   const FrameworkInfo& frameworkInfo,
@@ -246,12 +253,9 @@ inline void KafkaProducerAllocator::addFramework(
     "\nUsed Key-SlaveID, Value-Resources: " + usedProtoBufStr;
 
   produce("Add_framework", line);
-  //Ancestor::addFramework(frameworkId, frameworkInfo, used);
+  Ancestor::addFramework(frameworkId, frameworkInfo, used);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::removeFramework(
 inline void KafkaProducerAllocator::removeFramework(
   const FrameworkID& frameworkId)
 {
@@ -261,12 +265,9 @@ inline void KafkaProducerAllocator::removeFramework(
   std::string line = "FrameworkID: " + frameworkIdProtoBufStr;
   produce("Remove_framework", line);
 
-  //Ancestor::removeFramework(frameworkId);
+  Ancestor::removeFramework(frameworkId);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::activateFramework(
 inline void KafkaProducerAllocator::activateFramework(
   const FrameworkID& frameworkId)
 {
@@ -276,12 +277,9 @@ inline void KafkaProducerAllocator::activateFramework(
   std::string line = "FrameworkID: " + frameworkIdProtoBufStr;
   produce("Activate_framework", line);
 
-  // Ancestor::activateFramework(frameworkId);
+  Ancestor::activateFramework(frameworkId);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::deactivateFramework(
 inline void KafkaProducerAllocator::deactivateFramework(
   const FrameworkID& frameworkId)
 {
@@ -291,12 +289,9 @@ inline void KafkaProducerAllocator::deactivateFramework(
   std::string line = "FrameworkID: " + frameworkIdProtoBufStr;
   produce("Deactivate_framework", line);
 
-  //Ancestor::deactivateFramework(frameworkId);
+  Ancestor::deactivateFramework(frameworkId);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::addSlave(
 inline void KafkaProducerAllocator::addSlave(
   const SlaveID& slaveId,
   const SlaveInfo& slaveInfo,
@@ -315,12 +310,9 @@ inline void KafkaProducerAllocator::addSlave(
     "\nUsed Key-FrameworkID, Value-Resources: " + usedProtoBufStr;
 
   produce("Add_slave", line);
-  //Ancestor::addSlave(slaveId, slaveInfo, total, used);
+  Ancestor::addSlave(slaveId, slaveInfo, total, used);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::removeSlave(
 inline void KafkaProducerAllocator::removeSlave(
   const SlaveID& slaveId)
 {
@@ -330,12 +322,9 @@ inline void KafkaProducerAllocator::removeSlave(
   std::string line = "SlaveID: " + slaveIdProtoBufStr;
   produce("Remove_slave", line);
 
-  //Ancestor::removeSlave(slaveId);
+  Ancestor::removeSlave(slaveId);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::updateSlave(
 inline void KafkaProducerAllocator::updateSlave(
   const SlaveID& slaveId,
   const Resources& oversubscribed)
@@ -348,12 +337,9 @@ inline void KafkaProducerAllocator::updateSlave(
     "\nOversubscribed: " + oversubscribedProtoBufStr;
   produce("Update_slave", line);
 
-  //Ancestor::updateSlave(slaveId, oversubscribed);
+  Ancestor::updateSlave(slaveId, oversubscribed);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::activateSlave(
 inline void KafkaProducerAllocator::activateSlave(
   const SlaveID& slaveId)
 {
@@ -363,12 +349,9 @@ inline void KafkaProducerAllocator::activateSlave(
   std::string line = "SlaveID: " + slaveIdProtoBufStr;
   produce("Activate_slave", line);
 
-  //Ancestor::activateSlave(slaveId);
+  Ancestor::activateSlave(slaveId);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::deactivateSlave(
 inline void KafkaProducerAllocator::deactivateSlave(
   const SlaveID& slaveId)
 {
@@ -378,12 +361,9 @@ inline void KafkaProducerAllocator::deactivateSlave(
   std::string line = "SlaveID: " + slaveIdProtoBufStr;
   produce("Deactivate_slave", line);
 
-  //Ancestor::deactivateSlave(slaveId);
+  Ancestor::deactivateSlave(slaveId);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::updateWhitelist(
 inline void KafkaProducerAllocator::updateWhitelist(
   const Option<hashset<std::string> >& whitelist)
 {
@@ -393,12 +373,9 @@ inline void KafkaProducerAllocator::updateWhitelist(
   std::string line = "Whitelist: " + whiteListProtoBufStr;
   produce("Update_whitelist", line);
 
-  //Ancestor::updateWhitelist(whitelist);
+  Ancestor::updateWhitelist(whitelist);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::requestResources(
 inline void KafkaProducerAllocator::requestResources(
   const FrameworkID& frameworkId,
   const std::vector<Request>& requests)
@@ -411,12 +388,9 @@ inline void KafkaProducerAllocator::requestResources(
     "\nRequests: " + requestsProtoBufStr;
   produce("Request_resources", line);
 
-  //Ancestor::requestResources(frameworkId, requests);
+  Ancestor::requestResources(frameworkId, requests);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::updateAllocation(
 inline void KafkaProducerAllocator::updateAllocation(
   const FrameworkID& frameworkId,
   const SlaveID& slaveId,
@@ -433,12 +407,9 @@ inline void KafkaProducerAllocator::updateAllocation(
     "\nOperations: " + operationsProtoBufStr;
   produce("Update_allocation", line);
 
-  //Ancestor::updateAllocation(frameworkId, slaveId, operations);
+  Ancestor::updateAllocation(frameworkId, slaveId, operations);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::recoverResources(
 inline void KafkaProducerAllocator::recoverResources(
   const FrameworkID& frameworkId,
   const SlaveID& slaveId,
@@ -457,12 +428,9 @@ inline void KafkaProducerAllocator::recoverResources(
     "\nFilters: " + filtersProtoBufStr;
   produce("Recover_resources", line);
 
-  //Ancestor::recoverResources(frameworkId, slaveId, resources, filters);
+  Ancestor::recoverResources(frameworkId, slaveId, resources, filters);
 }
 
-
-//template <typename AllocatorProcess>
-//inline void KafkaProducerAllocator<AllocatorProcess>::reviveOffers(
 inline void KafkaProducerAllocator::reviveOffers(
   const FrameworkID& frameworkId)
 {
@@ -472,7 +440,7 @@ inline void KafkaProducerAllocator::reviveOffers(
   std::string line = "FrameworkID: " + frameworkIdProtoBufStr;
   produce("Revive_offers", line);
 
-  //Ancestor::reviveOffers(frameworkId);
+  Ancestor::reviveOffers(frameworkId);
 }
 
 void KafkaProducerAllocator::produce(const std::string& topic_str, const std::string& message_str) {
@@ -505,10 +473,11 @@ void KafkaProducerAllocator::produce(const std::string& topic_str, const std::st
 }
 }
 }
+}
 
 static mesos::master::allocator::Allocator* createKafkaAllocator(const mesos::Parameters& parameters)
 {
-  return mesos::master::allocator::KafkaProducerAllocator::create().get();
+  return mesos::master::allocator::custom::KafkaProducerAllocator::create().get();
 }
 
 mesos::modules::Module<mesos::master::allocator::Allocator> org_apache_mesos_KafkaHierarchicalAllocator(
