@@ -1,0 +1,147 @@
+/*
+ * Trace Event Meta Data Fields, please follow the pattern when you add new one.
+ */
+
+/* ---- Error Fields ---- */
+ErrorStage, "error_stage"
+Error, "error_description"
+ProxygenError, "proxygen_error"
+HTTPStatus, "http_status"
+DirectionError, "error_direction"
+CodecError, "codec_error"
+
+/* ---- Used in RequestExchange ---- */
+Uri, "uri"
+IsSecure, "is_secure"
+UsingProxy, "using_proxy"
+StatusCode, "status_code"
+Protocol, "protocol"
+LocalAddr, "local_addr"
+LocalPort, "local_port"
+ContentType, "content_type"
+UsingSpdy, "using_spdy"
+ReqHeaderSize, "request_header_size"
+ReqBodySize, "request_body_size"
+RspHeaderSize, "response_header_size"
+RedirectLocation, "redirect_location"
+NumRedirects, "num_redirects"
+RedirectResponseCode, "redirect_response_code"
+NumRetries, "num_retries"
+
+/* ---- Used in ResponseBodyRead ---- */
+RspBodySize, "response_body_size"
+RspIntvlAvg, "response_interval_average"
+RspIntvlStdDev, "response_interval_stddev"
+RspNumOnBody, "response_number_on_body"
+ServerQuality, "response_server_quality"
+
+/* ---- Used in PreConnect ---- */
+NewConnection, "new_connection"
+SessionManagerType, "sess_mgr_type"
+InFlightConns, "in_flight_conns"
+CachedSessions, "cached_sessions"
+ConnsStarted, "conns_started"
+RequestsWaited, "requests_waited"
+TotalRequestsWaited, "total_requests_waited",
+TotalConnsStarted, "total_conns_started"
+
+/* ---- Used in TcpConnect ---- */
+ServerAddr, "server_address"
+ServerPort, "server_port"
+CachedFamily, "cached_family"
+
+/* ---- Used in PostConnect ---- */
+NewSession, "new_session"
+NumWaiting, "num_waiting"
+
+/* ---- Used in DnsResolution and DNSCache ---- */
+HostName, "host_name"
+IpAddr, "ip_address"
+Port, "port"
+CNameRedirects, "cname_redirects"
+RedirectTime, "redirect_time"
+NumberResolvers, "number_resolvers"
+ResolversSerialized, "resolvers_serialized"
+RequestFamily, "request_family"
+NumberAnswers, "number_answers"
+
+/* ---- Used in DNSCache only ---- */
+DNSCacheHit, "dns_cache_hit"
+DNSCacheStale, "dns_cache_stale"
+DNSCacheInflight, "dns_cache_inflight"
+
+/* ---- Used in TlsSetup ---- */
+TLSReused, "tls_reused"
+TLSCacheHit, "tls_cache_hit"
+CipherName, "cipher_name"
+TLSVersion, "ssl_version"
+TLSCachePersistence, "tls_cache_persistence"
+
+/* ---- Used in Decompression ---- */
+CompressedSizeKey, "compressed_size"
+UncompressedSizeKey, "uncompressed_size"
+CompressionType, "compression_type"
+
+/* ---- Used in CertVerification ---- */
+VerifiedSuccess, "verified_success"
+VerifiedChain, "verified_chain"
+VerifiedTime, "verified_time"
+VerifiedServerAddress, "verified_server_address"
+VerifiedProxyAddress, "verified_proxy_address"
+VerifiedError, "verified_error"
+VerifiedReason, "verified_reason"
+VerifiedHostname, "verified_hostname"
+VerifiedMatchedCommonName, "verified_matchedCommonName"
+VerifiedMatchedSubjectAltName, "verified_matchedSubjectAltName"
+VerifiedNameMatched, "verified_nameMatched"
+VerifiedHostnameFailMessage, "verified_hostnameFailMessage"
+VerifiedCertSuccess, "verified_cert_success"
+
+/* ---- Used in Cert Pinning ---- */
+PinningReason, "verified_pinning_reason"
+PinningRequiredHash, "verified_pinning_required_hash"
+PinningUserHash, "verified_pinning_user_hash"
+PinningExcludedHash, "verified_pinning_excluded_hash"
+PinningRequiredFound, "verified_pinning_required_found"
+PinningUserInstalledFound, "verified_pinning_user_installed_found"
+PinningUserInstalledCount, "verified_pinning_user_installed_count"
+PinningExcludedFound, "verified_pinning_excluded_found"
+PinningTimePin, "verified_pinning_time_pin"
+PinningHost, "verified_pinning_host"
+PinningSuccess, "verified_pinning_success"
+VerifiedTimeMerge, "verified_time_merge"
+
+/* ---- Used in ProxyConnect ---- */
+ProxyHost, "proxy_host"
+ProxyPort, "proxy_port"
+
+/* ---- Used in ReadSocket ---- */
+ReadBytes, "read_bytes"
+
+/* ---- Used in WriteSocket ---- */
+WriteBytes, "write_bytes"
+
+/* ---- Used in Scheduling ---- */
+SchedulerType, "scheduler_type"
+InitialPriority, "initial_priority"
+SizeOfQueue, "size_of_queue"
+
+/* ---- Used in NetworkChange ---- */
+PreviousState, "previous_state"
+CurrentState, "current_state"
+NetworkID, "network_id"
+
+/* ---- Used in MultiConnector ---- */
+NumConnAttempts, "number_conn_attempts"
+AttemptAddrs, "attempt_addresses"
+AttemptAddrFamily, "attempt_address_family"
+SucceededConnTime, "succeeded_conn_time"
+
+/* ---- Used in FBLigerProtocol ---- */
+RequestID, "request_id"
+HumanReadableName, "human_readable_name"
+
+/* ---- Used in SessionTransactions ---- */
+CurrentTransactions, "current_txns"
+HistoricalMaximumTransactions, "historical_max_txns"
+PermittedMaximumTransactions, "permitted_max_txns"

@@ -1,0 +1,79 @@
+import "mesos/mesos.proto";
+package allocator;
+
+message SlaveResources {
+  required mesos.SlaveID slaveId = 1;
+  repeated mesos.Resource resources = 2;
+}
+
+message FrameworkResources {
+  required mesos.FrameworkID frameworkId = 1;
+  repeated mesos.Resource resources = 2;
+}
+
+message AddFramework {
+  required mesos.FrameworkID frameworkId = 1;
+  required mesos.FrameworkInfo frameworkInfo = 2;
+  repeated SlaveResources slaveResources = 3;
+}
+
+message RemoveFramework {
+  required mesos.FrameworkID frameworkId = 1;
+}
+
+message ActivateFramework {
+  required mesos.FrameworkID frameworkId = 1;
+}
+
+message DeactivateFramework {
+  required mesos.FrameworkID frameworkId = 1;
+}
+
+message AddSlave {
+  required mesos.SlaveID slaveId = 1;
+  required mesos.SlaveInfo slaveInfo = 2;
+  repeated mesos.Resource total = 3;
+  repeated FrameworkResources frameworkResources = 4;
+}
+
+message RemoveSlave {
+  required mesos.SlaveID slaveId = 1;
+}
+
+message UpdateSlave {
+  required mesos.SlaveID slaveId = 1;
+  repeated mesos.Resource resources = 2;
+}
+
+message ActivateSlave {
+  required mesos.SlaveID slaveId = 1;
+}
+
+message DeactivateSlave {
+  required mesos.SlaveID slaveId = 1;
+}
+
+message UpdateWhitelist {
+  repeated string whitelist = 1;
+}
+
+message RequestResources {
+  required mesos.FrameworkID frameworkId = 1;
+  repeated mesos.Request requests = 2;
+}
+
+message UpdateAllocation {
+  required mesos.FrameworkID frameworkId = 1;
+  required mesos.SlaveID slaveId = 2;
+  repeated mesos.Offer.Operation operations = 3;
+}
+
+message RecoverResources {
+  required mesos.FrameworkID frameworkId = 1;
+  required mesos.SlaveID slaveId = 2;
+  optional mesos.Filters filters = 3;
+}
+
+message ReviveOffers {
+  required mesos.FrameworkID frameworkId = 1;
+}
