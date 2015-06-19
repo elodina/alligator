@@ -48,7 +48,8 @@ class Handler : public proxygen::RequestHandler
 {
 private:
   HierarchicalDRFAllocator* allocator;
-    std::string boundary;
+  std::string boundary;
+  int content_length;
 
 public:
   explicit Handler(HierarchicalDRFAllocator* allocator);

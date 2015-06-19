@@ -207,28 +207,32 @@ curlpp::FormParts::Content::clone() const
 
 void
 curlpp::FormParts::Content::add(::curl_httppost ** first, 
-				::curl_httppost ** last)
+        ::curl_httppost ** last)
 {
   // We uses options that will copy internally the string (c_str),
   // so we don't need to worry about the memory.
   if(mContentType.empty()) {
     curl_formadd(first, 
-		 last, 
-		 CURLFORM_PTRNAME, 
-		 mName.c_str(), 
-		 CURLFORM_PTRCONTENTS,
-		 mContent.c_str(),
-		 CURLFORM_END);
+     last,
+     CURLFORM_PTRNAME,
+     mName.c_str(),
+     CURLFORM_PTRCONTENTS,
+     mContent.c_str(),
+     CURLFORM_CONTENTSLENGTH,
+     mContent.length(),
+     CURLFORM_END);
   }
   else {
     curl_formadd(first, 
-		 last, 
-		 CURLFORM_PTRNAME, 
-		 mName.c_str(), 
-		 CURLFORM_PTRCONTENTS,
-		 mContent.c_str(),
-		 CURLFORM_CONTENTTYPE,
-		 mContentType.c_str(),
-		 CURLFORM_END );
+     last,
+     CURLFORM_PTRNAME,
+     mName.c_str(),
+     CURLFORM_PTRCONTENTS,
+     mContent.c_str(),
+     CURLFORM_CONTENTSLENGTH,
+     mContent.length(),
+     CURLFORM_CONTENTTYPE,
+     mContentType.c_str(),
+     CURLFORM_END );
   }
 }

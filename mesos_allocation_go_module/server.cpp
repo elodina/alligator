@@ -137,6 +137,7 @@ HierarchicalDRFAllocator* Server::getAllocator()
 Handler::Handler(HierarchicalDRFAllocator* alloc)
 : allocator(alloc)
 , boundary("--")
+, content_length(0)
 {
 }
 
@@ -146,9 +147,11 @@ void Handler::onRequest(std::unique_ptr<HTTPMessage> headers) noexcept {
   HTTPHeaders& http_headers = headers->getHeaders();
   http_headers.forEach([](const std::string &h, const std::string &v)
     {
-    std::cerr << "Header " << h.c_str() << "Value " << v.c_str() << "\n";
+    std::cerr << h.c_str() << " " << v.c_str() << "\n";
     });
 
+  content_length = stoi(http_headers.rawGet("Content-Length"));
+  std::cerr << "Content length is " << content_length << '\n';
   http_headers.forEachValueOfHeader(HTTP_HEADER_CONTENT_TYPE, [this](const std::string &v)->bool
     {
     std::string boundary_str("boundary=");
@@ -166,13 +169,9 @@ void Handler::onBody(std::unique_ptr<folly::IOBuf> ibody) noexcept {
   std::cerr << "On body called\n ";
 
   const uint8_t* data_begin = ibody->data();
-  uint64_t data_length = ibody->length();
-  char buf[data_length+1];
-  memcpy(buf, data_begin, data_length);
-  buf[data_length] = '\0';
-  std::cerr << "Body data begin\n" << (char*)buf << "Body data end\n";
+  std::string str_body((const char*)data_begin, content_length);
+  std::cerr << "Body data begin\n" << str_body << "Body data end\n";
 
-  std::string str_body(buf);
   std::cerr << "Boundary is " << boundary.c_str() << '\n';
 
   //TODO use regex
@@ -190,7 +189,7 @@ void Handler::onBody(std::unique_ptr<folly::IOBuf> ibody) noexcept {
   size_t value_val_begin = value_pos + strlen(name_value);
   size_t value_val_end = str_body.find(boundary.c_str(), value_val_begin);
   std::string value_val = str_body.substr(value_val_begin, value_val_end-value_val_begin-strlen(suffix_part));
-  std::cerr << "Value is " << value_val.c_str() << '\n';
+  std::cerr << "Value is " << value_val << '\n';
 
   allocate(type_val, value_val);
 }
