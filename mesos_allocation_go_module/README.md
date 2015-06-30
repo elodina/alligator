@@ -13,7 +13,9 @@ make
 make install
 3. Run Mesos master from Mesos root folder with Go allocation module:
 export LD_LIBRARY_PATH=/usr/local/lib
-./bin/mesos-master.sh --ip=127.0.0.1 --work_dir=./mesos_master --allocator=org_apache_mesos_GoHierarchicalAllocator --modules='{"libraries":[{"file":"/usr/local/lib/mesos/libgoallocation.so", "modules":[{"name":"org_apache_mesos_GoHierarchicalAllocator"}]}]}'
+./bin/mesos-master.sh --ip=127.0.0.1 --work_dir=./mesos_master --allocator=org_apache_mesos_GoHierarchicalAllocator --modules='{"libraries":[{"file":"/usr/local/lib/mesos/libgoallocation.so", "modules":[{"name":"org_apache_mesos_GoHierarchicalAllocator"},"parameters": [{"key": "host","value": "localhost"},{"key": "port","value": "7080"}]]}]}'
 4. Run Mesos slave from Mesos root folder:
 export LD_LIBRARY_PATH=/usr/local/lib
 ./bin/mesos-slave.sh --master=127.0.0.1:5050
+
+

@@ -19,9 +19,9 @@
 #ifndef CLIENT_HPP_
 #define CLIENT_HPP_
 
-#include <curlpp/Options.hpp>
 #include <google/protobuf/message.h>
 #include <curlpp/cURLpp.hpp>
+
 #include "curlpp/Easy.hpp"
 
 using namespace cURLpp;
@@ -39,6 +39,7 @@ private:
 
 public:
   Client();
+  Client(const std::string& ihost, const std::string&iport);
   void postData(const std::string& event_name, const google::protobuf::Message& event_data);
 };
 

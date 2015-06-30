@@ -29,7 +29,7 @@
 #include <boost/asio.hpp>
 #include <boost/thread/thread.hpp>
 #include "./client.hpp"
-#include "./server.hpp"
+#include "./allocator_server.hpp"
 #include "./allocator.pb.h"
 
 using namespace allocator;
@@ -45,13 +45,13 @@ class GoAllocator : public mesos::master::allocator::Allocator
 {
 private:
   Client client;
-  Server server;
+  AllocatorServer server;
 
 public:
   // Factory to allow for typed tests.
-  static Try<mesos::master::allocator::Allocator*> create();
+  static Try<mesos::master::allocator::Allocator*> create(const std::string& ihost, const std::string&iport);
 
-  ~GoAllocator();
+  virtual ~GoAllocator();
 
   void initialize(
     const Duration& allocationInterval,
@@ -119,28 +119,29 @@ public:
     const FrameworkInfo& frameworkInfo);
 
 private:
-  GoAllocator();
+  GoAllocator(const std::string& ihost, const std::string&iport);
   GoAllocator(const GoAllocator&); // Not copyable.
   GoAllocator& operator=(const GoAllocator&); // Not assignable.
 };
 
 Try<mesos::master::allocator::Allocator*>
-GoAllocator::create()
+GoAllocator::create(const std::string& ihost, const std::string&iport)
 {
   std::cerr << "Created Go allocator\n ";
   mesos::master::allocator::Allocator* allocator =
-    new GoAllocator();
+    new GoAllocator(ihost, iport);
   return CHECK_NOTNULL(allocator);
 }
 
-GoAllocator::GoAllocator()
+GoAllocator::GoAllocator(const std::string& ihost, const std::string&iport)
+:client(ihost, iport)
 {
-
+  server.start();
 }
 
 GoAllocator::~GoAllocator()
 {
-
+  server.stop();
 }
 
 void GoAllocator::initialize(
@@ -158,7 +159,25 @@ inline void GoAllocator::addFramework(
   const FrameworkInfo& frameworkInfo,
   const hashmap<SlaveID, Resources>& used)
 {
+  FrameworkID* copy_frmId = new FrameworkID(frameworkId);
+  FrameworkInfo* copy_frmInfo = new FrameworkInfo(frameworkInfo);
+  AddFramework proto;
+  proto.set_allocated_frameworkid(copy_frmId);
+  proto.set_allocated_frameworkinfo(copy_frmInfo);
 
+  for (typename hashmap<SlaveID, Resources>::const_iterator it = used.cbegin(); it != used.cend(); ++it)
+  {
+    SlaveResources* slave_res= proto.add_slaveresources();
+    SlaveID* copy_slave_id = new SlaveID(it->first);
+    slave_res->set_allocated_slaveid(copy_slave_id);
+    for (Resources::const_iterator rit = it->second.begin(); rit != it->second.end(); ++rit)
+    {
+      Resource* res = slave_res->add_resources();
+      *res = *rit;
+    }
+  }
+
+  client.postData("AddFramework", proto);
 }
 
 void GoAllocator::updateFramework(
@@ -287,7 +306,27 @@ inline void GoAllocator::reviveOffers(
 
 static mesos::master::allocator::Allocator* createGoAllocator(const mesos::Parameters& parameters)
 {
-  return mesos::master::allocator::custom::GoAllocator::create().get();
+  std::string host = "localhost";
+  std::string port = "4050";
+  bool host_set = false, port_set = false;
+  for (int i = 0; i != parameters.parameter_size(); ++i)
+  {
+    if (port_set && host_set)
+      break;
+    if (parameters.parameter(i).has_key() && parameters.parameter(i).key() == "host" && parameters.parameter(i).has_value())
+    {
+      host = parameters.parameter(i).value();
+      host_set = true;
+      continue;
+    }
+    if (parameters.parameter(i).has_key() && parameters.parameter(i).key() == "port" && parameters.parameter(i).has_value())
+    {
+      port = parameters.parameter(i).value();
+      port_set = true;
+
+    }
+  }
+  return mesos::master::allocator::custom::GoAllocator::create(host, port).get();
 }
 
 mesos::modules::Module<mesos::master::allocator::Allocator> org_apache_mesos_GoHierarchicalAllocator(

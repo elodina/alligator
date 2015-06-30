@@ -77,3 +77,24 @@ message RecoverResources {
 message ReviveOffers {
   required mesos.FrameworkID frameworkId = 1;
 }
+
+message MasterLaunchTaskLabelDecorator {
+      required mesos.TaskInfo taskInfo = 1;
+      required mesos.FrameworkInfo frameworkInfo = 2;
+      required mesos.SlaveInfo slaveInfo = 3;
+}
+
+message SlaveRunTaskLabelDecorator {
+      required mesos.TaskInfo taskInfo = 1;
+      required mesos.FrameworkInfo frameworkInfo = 2;
+      required mesos.SlaveInfo slaveInfo = 3;
+}
+
+message SlaveExecutorEnvironmentDecorator {
+      required mesos.ExecutorInfo executorInfo = 1;
+}
+
+message SlaveRemoveExecutorHook {
+      required mesos.FrameworkInfo frameworkInfo = 1;
+      required mesos.ExecutorInfo executorInfo = 2;
+}

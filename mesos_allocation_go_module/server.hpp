@@ -19,11 +19,9 @@
 #ifndef SERVER_HPP_
 #define SERVER_HPP_
 
-#include <master/allocator/mesos/hierarchical.hpp>
 #include <httpserver/HTTPServer.h>
 
 using namespace proxygen;
-using namespace mesos::internal::master::allocator;
 
 namespace mesos {
 namespace master {
@@ -34,28 +32,31 @@ class Server
 {
 private:
   std::unique_ptr<HTTPServer> server;
-  HierarchicalDRFAllocator* allocator;
   std::unique_ptr<std::thread> server_thread;
 public:
-  explicit Server();
-  ~Server();
+  Server();
+  virtual ~Server();
   bool start();
   void stop();
-  HierarchicalDRFAllocator* getAllocator();
+
+private:
+  virtual bool onStarting() = 0;
+  virtual void initOptions(HTTPServerOptions& options) = 0;
 };
 
 class Handler : public proxygen::RequestHandler
 {
 private:
-  HierarchicalDRFAllocator* allocator;
   std::string boundary;
   int content_length;
+  std::unique_ptr<folly::IOBuf> body;
 
 public:
-  explicit Handler(HierarchicalDRFAllocator* allocator);
+  Handler();
+  virtual ~Handler();
 
   void onRequest(std::unique_ptr<proxygen::HTTPMessage> headers)
-      noexcept override;
+  noexcept override;
 
   void onBody(std::unique_ptr<folly::IOBuf> body) noexcept override;
 
@@ -68,8 +69,7 @@ public:
   void onError(proxygen::ProxygenError err) noexcept override;
 
 private:
-  void allocate(const std::string& type, const std::string& value);
-  void addSlave(const std::string& data);
+  virtual void process(const std::string& type, const std::string& value) = 0;
 };
 
 }}}}
