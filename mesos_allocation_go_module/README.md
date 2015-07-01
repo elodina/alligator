@@ -12,9 +12,9 @@ JDK
 python
 libtool
   
-  zookeeper
-  leveldb<br>
-  glog<br>
+zookeeper
+leveldb
+glog
   protoc<br>
   gmock<br>
   curl<br>
