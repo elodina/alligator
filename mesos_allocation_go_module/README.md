@@ -12,7 +12,7 @@ You may need to install such third party packages prior to configurating:<br>
   python
   libtool
   
-  zookeeper<br>
+  zookeeper
   leveldb<br>
   glog<br>
   protoc<br>
