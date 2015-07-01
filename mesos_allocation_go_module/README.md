@@ -56,7 +56,7 @@ List of events Hook module sends to Go server:
 List of events Allocator module sends to Go server:<br>
   AddFramework<br>
   RemoveFramework<br>
-  ActivateFramework<br><br>
+  ActivateFramework<br>
   DeactivateFramework<br>
   AddSlave<br>
   RemoveSlave<br>
