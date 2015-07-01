@@ -34,7 +34,7 @@ AM_LIBS = $(PTHREAD_LIBS)
 AM_CPPFLAGS = $(MESOS_CPPFLAGS) -I$(top_srcdir)/curlpp/include -I$(top_srcdir)/proxygen/proxygen -Wall -Werror
 
 $(top_srcdir)/allocator.pb.h $(top_srcdir)/allocator.pb.cc: $(top_srcdir)/allocator.proto
-	/usr/bin/protoc -I$(top_srcdir)/ -I/home/dzhyrova/Development/mesos-master/include --cpp_out=$(top_srcdir)/ $(top_srcdir)/allocator.proto
+	/usr/bin/protoc -I$(top_srcdir)/ -I@MESOS_DIR@/include --cpp_out=$(top_srcdir)/ $(top_srcdir)/allocator.proto
 
 libgoallocation_la_SOURCES = allocator.pb.h \
 allocator.pb.cc \
