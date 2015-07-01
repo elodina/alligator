@@ -6,20 +6,20 @@ make
 make install
 
 You may need to install such third party packages prior to configurating:
-boost
-JDK
-python
-libtool
-zookeeper
-leveldb
-glog
-protoc
-gmock
-curl
-sasl
-zlib
-apr
-svn
+  boost
+  JDK
+  python
+  libtool
+  zookeeper
+  leveldb
+  glog
+  protoc
+  gmock
+  curl
+  sasl
+  zlib
+  apr
+  svn
 
 2. Build Go allocation module. From the module root folder execute:
 ./bootstrap
@@ -39,36 +39,36 @@ export LD_LIBRARY_PATH=/usr/local/lib
 
 
 List of events Hook module sends to Go server:
-1. MasterLaunchTaskLabelDecorator
-Protobuf sent to server: MasterLaunchTaskLabelDecorator
-Protobuf expected from server: Labels
-2. SlaveRunTaskLabelDecorator
-Protobuf sent to server: SlaveRunTaskLabelDecorator
-Protobuf expected from server: Labels
-3. SlaveExecutorEnvironmentDecorator
-Protobuf sent to server: SlaveExecutorEnvironmentDecorator
-Protobuf expected from server: Environment
-4. SlaveRemoveExecutorHook
-Protobuf sent to server: SlaveRemoveExecutorHook
-Protobuf expected from server: None. Server should locate the file created by environment decorator hook
-and delete it
+  1. MasterLaunchTaskLabelDecorator
+  Protobuf sent to server: MasterLaunchTaskLabelDecorator
+  Protobuf expected from server: Labels
+  2. SlaveRunTaskLabelDecorator
+  Protobuf sent to server: SlaveRunTaskLabelDecorator
+  Protobuf expected from server: Labels
+  3. SlaveExecutorEnvironmentDecorator
+  Protobuf sent to server: SlaveExecutorEnvironmentDecorator
+  Protobuf expected from server: Environment
+  4. SlaveRemoveExecutorHook
+  Protobuf sent to server: SlaveRemoveExecutorHook
+  Protobuf expected from server: None. Server should locate the file created by environment decorator hook
+  and delete it
 
 List of events Allocator module sends to Go server:
-AddFramework 
-RemoveFramework
-ActivateFramework
-DeactivateFramework
-AddSlave
-RemoveSlave
-UpdateSlave
-ActivateSlave
-DeactivateSlave
-UpdateWhitelist
-RequestResources
-UpdateAllocation
-RecoverResources
-ReviveOffers
-UpdateFramework
-Each event sends and expects a protobuf with event's name.
+  AddFramework 
+  RemoveFramework
+  ActivateFramework
+  DeactivateFramework
+  AddSlave
+  RemoveSlave
+  UpdateSlave
+  ActivateSlave
+  DeactivateSlave
+  UpdateWhitelist
+  RequestResources
+  UpdateAllocation
+  RecoverResources
+  ReviveOffers
+  UpdateFramework
+  Each event sends and expects a protobuf with event's name.
 
 
