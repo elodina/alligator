@@ -71,11 +71,17 @@ message UpdateAllocation {
 message RecoverResources {
   required mesos.FrameworkID frameworkId = 1;
   required mesos.SlaveID slaveId = 2;
-  optional mesos.Filters filters = 3;
+  repeated mesos.Resource resources = 3;
+  optional mesos.Filters filters = 4;
 }
 
 message ReviveOffers {
   required mesos.FrameworkID frameworkId = 1;
+}
+
+message UpdateFramework {
+  required mesos.FrameworkID frameworkId = 1;
+  required mesos.FrameworkInfo frameworkInfo = 2;
 }
 
 message MasterLaunchTaskLabelDecorator {

@@ -38,11 +38,15 @@ namespace custom {
 
 class HookHandlerFactory : public RequestHandlerFactory {
 public:
-  explicit HookHandlerFactory(std::function<void(const std::string&)> fSlaveRunTaskLabelDecorator)
-  : onWaitForSlaveRunTaskLabelDecorator(fSlaveRunTaskLabelDecorator)
-  {
+  HookHandlerFactory(std::function<void(const std::string&)> fMasterLaunchTaskLabelDecorator,
+    std::function<void(const std::string&)> fSlaveRunTaskLabelDecorator,
+    std::function<void(const std::string&)> fSlaveExecutorEnvironmentDecorator)
+: onWaitForMasterLaunchTaskLabelDecorator(fMasterLaunchTaskLabelDecorator)
+, onWaitForSlaveRunTaskLabelDecorator(fSlaveRunTaskLabelDecorator)
+, onWaitForSlaveExecutorEnvironmentDecorator(fSlaveExecutorEnvironmentDecorator)
+{
 
-  }
+}
 
   void onServerStart() noexcept override
     {
@@ -56,11 +60,15 @@ public:
 
   RequestHandler* onRequest(RequestHandler*, HTTPMessage*) noexcept override
     {
-    return new HookHandler(onWaitForSlaveRunTaskLabelDecorator);
+    return new HookHandler(onWaitForMasterLaunchTaskLabelDecorator,
+      onWaitForSlaveRunTaskLabelDecorator,
+      onWaitForSlaveExecutorEnvironmentDecorator);
     }
 
 private:
+  std::function<void(const std::string&)> onWaitForMasterLaunchTaskLabelDecorator;
   std::function<void(const std::string&)> onWaitForSlaveRunTaskLabelDecorator;
+  std::function<void(const std::string&)> onWaitForSlaveExecutorEnvironmentDecorator;
 };
 
 HookServer::HookServer()
@@ -79,22 +87,57 @@ void HookServer::initOptions(HTTPServerOptions& options)
   options.idleTimeout = std::chrono::milliseconds(60000);
   options.shutdownOn = {SIGINT, SIGTERM};
   options.enableContentCompression = true;
-  std::unique_ptr<RequestHandlerFactory> factory(new HookHandlerFactory([this](const std::string& value)->void
+  std::unique_ptr<RequestHandlerFactory> factory(new HookHandlerFactory(
+    [this](const std::string& value)->void
     {
-    slave_run_task_label_decorator.ParseFromString(value);
-    std::unique_lock<std::mutex> lck(mtx);
-    ready = true;
-    cv.notify_all();
-    }));
+      master_launch_task_label_decorator.ParseFromString(value);
+      notifyReady();
+    },
+    [this](const std::string& value)->void
+    {
+      slave_run_task_label_decorator.ParseFromString(value);
+      notifyReady();
+    },
+    [this](const std::string& value)->void
+    {
+      slave_executor_environment_decorator.ParseFromString(value);
+      notifyReady();
+    }
+  ));
 
   options.handlerFactories = RequestHandlerChain()
-                  .addThen(factory)
-                  .build();
+                    .addThen(factory)
+                    .build();
+}
+
+void HookServer::notifyReady()
+{
+  std::unique_lock<std::mutex> lck(mtx);
+  ready = true;
+  cv.notify_all();
 }
 
 bool HookServer::onStarting()
 {
   return true;
+}
+
+Labels HookServer::waitForMasterLaunchTaskLabelDecorator()
+{
+  std::unique_lock<std::mutex> lck(mtx);
+  bool info_displayed = false;
+  while (!ready)
+  {
+    if (!info_displayed)
+    {
+      std::cerr << "Waiting for labels from Go server...\n";
+      info_displayed = true;
+    }
+    cv.wait(lck);
+  }
+  ready = false;
+  std::cerr << "Received labels from Go server\n";
+  return master_launch_task_label_decorator;
 }
 
 Labels HookServer::waitForSlaveRunTaskLabelDecorator()
@@ -110,12 +153,35 @@ Labels HookServer::waitForSlaveRunTaskLabelDecorator()
     }
     cv.wait(lck);
   }
+  ready = false;
   std::cerr << "Received labels from Go server\n";
   return slave_run_task_label_decorator;
 }
 
-HookHandler::HookHandler(std::function<void(const std::string&)> fSlaveRunTaskLabelDecorator)
-: onWaitForSlaveRunTaskLabelDecorator(fSlaveRunTaskLabelDecorator)
+Environment HookServer::waitForSlaveExecutorEnvironmentDecorator()
+{
+  std::unique_lock<std::mutex> lck(mtx);
+  bool info_displayed = false;
+  while (!ready)
+  {
+    if (!info_displayed)
+    {
+      std::cerr << "Waiting for environment from Go server...\n";
+      info_displayed = true;
+    }
+    cv.wait(lck);
+  }
+  ready = false;
+  std::cerr << "Received environment from Go server\n";
+  return slave_executor_environment_decorator;
+}
+
+HookHandler::HookHandler(std::function<void(const std::string&)> fMasterLaunchTaskLabelDecorator,
+  std::function<void(const std::string&)> fSlaveRunTaskLabelDecorator,
+  std::function<void(const std::string&)> fSlaveExecutorEnvironmentDecorator)
+: onWaitForMasterLaunchTaskLabelDecorator(fMasterLaunchTaskLabelDecorator)
+, onWaitForSlaveRunTaskLabelDecorator(fSlaveRunTaskLabelDecorator)
+, onWaitForSlaveExecutorEnvironmentDecorator(fSlaveExecutorEnvironmentDecorator)
 {
 
 }
@@ -127,8 +193,12 @@ HookHandler::~HookHandler()
 
 void HookHandler::process(const std::string& type, const std::string& value)
 {
+  if (type == "MasterLaunchTaskLabelDecorator")
+    onWaitForMasterLaunchTaskLabelDecorator(value);
   if (type == "SlaveRunTaskLabelDecorator")
     onWaitForSlaveRunTaskLabelDecorator(value);
+  if (type == "SlaveExecutorEnvironmentDecorator")
+    onWaitForSlaveExecutorEnvironmentDecorator(value);
 }
 
 }}}}

@@ -83,10 +83,9 @@ GoHook::GoHook(const std::string& ihost, const std::string& iport)
 
   server.start();
   client.postData("MasterLaunchTaskLabelDecorator", proto);
-  //::Result<Labels> labels(Labels()) ;//= server.waitForMasterLaunchTaskLabelDecorator();
+  Labels labels = server.waitForMasterLaunchTaskLabelDecorator();
   server.stop();
-  //  return labels;
-  return None();
+  return labels;
 }
 
 ::Result<Labels> GoHook::slaveRunTaskLabelDecorator(
@@ -102,7 +101,6 @@ GoHook::GoHook(const std::string& ihost, const std::string& iport)
   proto.set_allocated_taskinfo(copy_taskInfo);
   proto.set_allocated_frameworkinfo(copy_frmInfo);
   proto.set_allocated_slaveinfo(copy_slaveInfo);
-
 
   server.start();
   client.postData("SlaveRunTaskLabelDecorator", proto);
@@ -121,10 +119,9 @@ GoHook::GoHook(const std::string& ihost, const std::string& iport)
 
   server.start();
   client.postData("SlaveExecutorEnvironmentDecorator", proto);
-  //  ::Result<Environment> env(Environment()) ;//= server.waitForSlaveExecutorEnvironmentDecorator();
+  Environment env = server.waitForSlaveExecutorEnvironmentDecorator();
   server.stop();
-  //  return env;
-  return None();
+  return env;
 }
 
 
@@ -143,9 +140,7 @@ Try<Nothing> GoHook::slaveRemoveExecutorHook(
 
   server.start();
   client.postData("SlaveRemoveExecutorHook", proto);
-  //  Try<Nothing> res(Nothing()) ;//= server.waitForSlaveExecutorEnvironmentDecorator();
   server.stop();
-  //   return res;
   return Nothing();
 }
 
