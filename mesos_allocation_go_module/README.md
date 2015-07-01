@@ -6,7 +6,7 @@ make
 make install
 
 You may need to install such third party packages prior to configurating:
-boost 
+boost
 JDK
 python
 libtool
