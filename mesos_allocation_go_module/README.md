@@ -7,9 +7,7 @@ make install
 
 You may need to install such third party packages prior to configurating:<br>
   boost
-  
   JDK
-  
   python<br>
   libtool<br>
   zookeeper<br>
