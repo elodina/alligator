@@ -8,7 +8,7 @@ make install
 You may need to install such third party packages prior to configurating:
   boost
   JDK
-  python
+python
   libtool
   zookeeper
   leveldb
