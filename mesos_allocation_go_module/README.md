@@ -10,7 +10,8 @@ You may need to install such third party packages prior to configurating:<br>
   
   JDK
   python
-  libtool<br>
+  libtool
+  
   zookeeper<br>
   leveldb<br>
   glog<br>
