@@ -39,36 +39,36 @@ export LD_LIBRARY_PATH=/usr/local/lib
 
 
 List of events Hook module sends to Go server:
-  1. MasterLaunchTaskLabelDecorator<br>
-  Protobuf sent to server: MasterLaunchTaskLabelDecorator<br>
-  Protobuf expected from server: Labels<br>
-  2. SlaveRunTaskLabelDecorator<br>
-  Protobuf sent to server: SlaveRunTaskLabelDecorator<br>
-  Protobuf expected from server: Labels<br>
-  3. SlaveExecutorEnvironmentDecorator<br>
-  Protobuf sent to server: SlaveExecutorEnvironmentDecorator<br>
-  Protobuf expected from server: Environment<br>
-  4. SlaveRemoveExecutorHook<br>
-  Protobuf sent to server: SlaveRemoveExecutorHook<br>
-  Protobuf expected from server: None. Server should locate the file created by environment decorator hook<br>
+  1. MasterLaunchTaskLabelDecorator  
+    Protobuf sent to server: MasterLaunchTaskLabelDecorator  
+    Protobuf expected from server: Labels  
+  2. SlaveRunTaskLabelDecorator  
+    Protobuf sent to server: SlaveRunTaskLabelDecorator  
+    Protobuf expected from server: Labels  
+  3. SlaveExecutorEnvironmentDecorator  
+    Protobuf sent to server: SlaveExecutorEnvironmentDecorator  
+    Protobuf expected from server: Environment  
+  4. SlaveRemoveExecutorHook  
+    Protobuf sent to server: SlaveRemoveExecutorHook  
+    Protobuf expected from server: None. Server should locate the file created by environment decorator hook<br>
   and delete it
 
-List of events Allocator module sends to Go server:<br>
-  AddFramework<br>
-  RemoveFramework<br>
-  ActivateFramework<br>
-  DeactivateFramework<br>
-  AddSlave<br>
-  RemoveSlave<br>
-  UpdateSlave<br>
-  ActivateSlave<br>
-  DeactivateSlave<br>
-  UpdateWhitelist<br>
-  RequestResources<br>
-  UpdateAllocation<br>
-  RecoverResources<br>
-  ReviveOffers<br>
-  UpdateFramework<br>
-  Each event sends and expects a protobuf with event's name.<br>
+List of events Allocator module sends to Go server:  
+  AddFramework  
+  RemoveFramework  
+  ActivateFramework  
+  DeactivateFramework  
+  AddSlave  
+  RemoveSlave  
+  UpdateSlave  
+  ActivateSlave  
+  DeactivateSlave  
+  UpdateWhitelist  
+  RequestResources  
+  UpdateAllocation  
+  RecoverResources  
+  ReviveOffers  
+  UpdateFramework  
+  Each event sends and expects a protobuf with event's name.
 
 
