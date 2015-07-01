@@ -15,7 +15,7 @@ libtool
 zookeeper
 leveldb
 glog
-  protoc<br>
+protoc
   gmock<br>
   curl<br>
   sasl<br>
