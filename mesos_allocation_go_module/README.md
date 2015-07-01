@@ -6,20 +6,20 @@ make
 make install
 
 You may need to install such third party packages prior to configurating:
-  boost<br><br>
-  JDK<br><br>
-python
-  libtool
-  zookeeper
-  leveldb
-  glog
-  protoc
-  gmock
-  curl
-  sasl
-  zlib
-  apr
-  svn
+  boost<br>
+  JDK<br>
+  python<br>
+  libtool<br>
+  zookeeper<br>
+  leveldb<br>
+  glog<br>
+  protoc<br>
+  gmock<br>
+  curl<br>
+  sasl<br>
+  zlib<br>
+  apr<br>
+  svn<br>
 
 2. Build Go allocation module. From the module root folder execute:
 ./bootstrap
