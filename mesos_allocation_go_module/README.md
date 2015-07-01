@@ -6,11 +6,11 @@ make
 make install
 
 You may need to install such third party packages prior to configurating:<br>
-  boost
+boost
   
-  JDK
-  python
-  libtool
+JDK
+python
+libtool
   
   zookeeper
   leveldb<br>
