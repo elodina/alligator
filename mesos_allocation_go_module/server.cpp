@@ -24,8 +24,6 @@
 #include <unistd.h>
 #include "./allocator.pb.h"
 
-//#include "tmp_go.hpp"
-
 using namespace allocator;
 
 using folly::EventBase;
@@ -44,54 +42,23 @@ DEFINE_string(ip, "0.0.0.0", "IP/Hostname to bind to");
 DEFINE_int32(threads, 0, "Number of threads to listen on. Numbers <= 0 "
   "will use the number of cores on this machine.");
 
-class HandlerFactory : public RequestHandlerFactory {
-public:
-  explicit HandlerFactory(HierarchicalDRFAllocator* alloc)
-  : allocator(alloc)
-  {
-
-  }
-
-  void onServerStart() noexcept override
-  {
-
-  }
-
-  void onServerStop() noexcept override
-  {
-
-  }
-
-  RequestHandler* onRequest(RequestHandler*, HTTPMessage*) noexcept override
-  {
-    return new Handler(allocator);
-  }
-
-private:
-  HierarchicalDRFAllocator* allocator;
-};
-
 Server::Server()
 :server(nullptr)
-,allocator(nullptr)
 {
-  start();
+
 }
 
 Server::~Server()
 {
-  stop();
+
 }
 
 bool Server::start()
 {
   //google::InstallFailureSignalHandler();
 
-  Try<mesos::master::allocator::Allocator*> try_allocator = HierarchicalDRFAllocator::create();
-  //TODO check ownership
-  if (try_allocator.isError())
+  if (!onStarting())
     return false;
-  allocator = dynamic_cast<HierarchicalDRFAllocator*>(try_allocator.get());
 
   std::vector<HTTPServer::IPConfig> IPs = {
     {SocketAddress(FLAGS_ip, FLAGS_http_port, true), Protocol::HTTP},
@@ -104,13 +71,7 @@ bool Server::start()
 
   HTTPServerOptions options;
   options.threads = static_cast<size_t>(FLAGS_threads);
-  options.idleTimeout = std::chrono::milliseconds(60000);
-  options.shutdownOn = {SIGINT, SIGTERM};
-  options.enableContentCompression = true;
-  std::unique_ptr<RequestHandlerFactory> factory(new HandlerFactory(allocator));
-  options.handlerFactories = RequestHandlerChain()
-          .addThen(factory)
-          .build();
+  initOptions(options);
   server.reset(new HTTPServer(std::move(options)));
 
   server->bind(IPs);
@@ -129,16 +90,15 @@ void Server::stop()
     server->stop();
 }
 
-HierarchicalDRFAllocator* Server::getAllocator()
-{
-  return allocator;
-}
-
-Handler::Handler(HierarchicalDRFAllocator* alloc)
-: allocator(alloc)
-, boundary("--")
+Handler::Handler()
+: boundary("--")
 , content_length(0)
 {
+}
+
+Handler::~Handler()
+{
+
 }
 
 void Handler::onRequest(std::unique_ptr<HTTPMessage> headers) noexcept {
@@ -191,46 +151,17 @@ void Handler::onBody(std::unique_ptr<folly::IOBuf> ibody) noexcept {
   std::string value_val = str_body.substr(value_val_begin, value_val_end-value_val_begin-strlen(suffix_part));
   std::cerr << "Value is " << value_val << '\n';
 
-  allocate(type_val, value_val);
-}
+  body = std::move(ibody);
 
-void Handler::allocate(const std::string& type, const std::string& value)
-{
-  if (type == "AddSlave")
-    addSlave(value);
-}
-
-void Handler::addSlave(const std::string& data)
-{
-  std::cerr << "Parsing AddSlave\n";
-  AddSlave proto;
-
-  std::cerr << "Proto received length is " << (int)data.length() << '\n';
-
-  proto.ParseFromString(data);
-  std::cerr << "Parsed slaveId value is " << proto.slaveid().value().c_str() <<
-    "\nParsed slaveInfo hostname is " << proto.slaveinfo().hostname().c_str() << '\n';
-
-  SlaveID slaveId = proto.slaveid();
-  SlaveInfo slaveInfo = proto.slaveinfo();
-
-  Resources total;
-  for (int i = 0; i != proto.total_size(); ++i)
-    total+=proto.total(i);
-
-  hashmap<FrameworkID, Resources> used;
-  for (int i = 0; i != proto.frameworkresources_size(); ++i)
-  {
-    Resources total;
-    for (int j = 0; j != proto.frameworkresources(i).resources_size(); ++j)
-      total+=proto.frameworkresources(i).resources(j);
-    used.put(proto.frameworkresources(i).frameworkid(), total);
-  }
-  allocator->addSlave(slaveId, slaveInfo, total, used);
+  process(type_val, value_val);
 }
 
 void Handler::onEOM() noexcept {
-  std::cerr << "On OEM called\n ";
+  std::cerr << "On EOM called\n ";
+  ResponseBuilder(downstream_)
+  .status(200, "OK")
+  .body(std::move(body))
+  .sendWithEOM();
 }
 
 void Handler::onUpgrade(UpgradeProtocol protocol) noexcept {

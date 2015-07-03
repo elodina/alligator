@@ -18,23 +18,21 @@
 
 #include "client.hpp"
 #include <string>
+#include <curlpp/Options.hpp>
 
 namespace mesos {
 namespace master {
 namespace allocator {
 namespace custom {
 
-Client::Client()
+Client::Client(const std::string& ihost, const std::string &iport)
 {
-  //TODO
-  curlpp::options::Url url(std::string("localhost"));
-  //curlpp::options::Url url(std::string("http://10.1.16.228"));
+  curlpp::options::Url url(ihost);
   request.setOpt(url);
-  //curlpp::options::Port port(8081);
-  curlpp::options::Port port(4050);
+  //TODO check conversion
+  curlpp::options::Port port(stoi(iport));
   request.setOpt(port);
   request.setOpt(new cURLpp::Options::Verbose(true));
-
 }
 
 void Client::postData(const std::string& event_name, const google::protobuf::Message& event_data)
@@ -47,7 +45,6 @@ void Client::postData(const std::string& event_name, const google::protobuf::Mes
   const std::string type_name("type");
   const std::string value_name("value");
 
-  std::cerr << "Proto length is " << (int)proto_code.length() << '\n';
   formParts.push_back(new curlpp::FormParts::Content(type_name, event_name));
   formParts.push_back(new curlpp::FormParts::Content(value_name, proto_code));
 
